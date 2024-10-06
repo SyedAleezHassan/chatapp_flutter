@@ -106,10 +106,133 @@
 //     );
 //   }
 // }
+///@@@@@@prev code
+// import 'package:flutter/material.dart';
+// import 'package:cloud_firestore/cloud_firestore.dart';
+// import 'package:firebase_auth/firebase_auth.dart';
+
+// class ChatScreen extends StatefulWidget {
+//   final String chatPartnerId;
+//   final String chatPartnerName;
+
+//   ChatScreen(this.chatPartnerId, this.chatPartnerName);
+
+//   @override
+//   _ChatScreenState createState() => _ChatScreenState();
+// }
+
+// class _ChatScreenState extends State<ChatScreen> {
+//   final _firestore = FirebaseFirestore.instance;
+//   final _auth = FirebaseAuth.instance;
+//   final TextEditingController _messageController = TextEditingController();
+
+//   // Function to create a unique chatRoomId for each chat between two users
+//   String getChatRoomId(String userId, String chatPartnerId) {
+//     return userId.hashCode <= chatPartnerId.hashCode
+//         ? '$userId-$chatPartnerId'
+//         : '$chatPartnerId-$userId';
+//   }
+
+//   // Send a message to Firestore
+//   Future<void> sendMessage() async {
+//     if (_messageController.text.isNotEmpty) {
+//       String chatRoomId = getChatRoomId(_auth.currentUser!.uid, widget.chatPartnerId);
+      
+//       await _firestore.collection('chats').doc(chatRoomId).collection('messages').add({
+//         'sender': _auth.currentUser!.uid,
+//         'receiver': widget.chatPartnerId,
+//         'text': _messageController.text,
+//         'timestamp': FieldValue.serverTimestamp(),
+//       });
+//       _messageController.clear();
+//     }
+//   }
+
+//   @override
+//   Widget build(BuildContext context) {
+//     return Scaffold(
+//       appBar: AppBar(
+//         title: Text(widget.chatPartnerName),
+//         backgroundColor: Colors.black,
+//       ),
+//       body: Column(
+//         children: [
+//           Expanded(
+//             child: StreamBuilder<QuerySnapshot>(
+//               stream: _firestore
+//                   .collection('chats')
+//                   .doc(getChatRoomId(_auth.currentUser!.uid, widget.chatPartnerId))
+//                   .collection('messages')
+//                   .orderBy('timestamp', descending: true)
+//                   .snapshots(),
+//               builder: (context, snapshot) {
+//                 if (!snapshot.hasData) {
+//                   return Center(child: CircularProgressIndicator());
+//                 }
+
+//                 final messages = snapshot.data!.docs;
+//                 List<Widget> messageWidgets = [];
+//                 for (var message in messages) {
+//                   var messageData = message.data() as Map<String, dynamic>;
+//                   var isMe = messageData['sender'] == _auth.currentUser!.uid;
+//                   messageWidgets.add(
+//                     Align(
+//                       alignment: isMe ? Alignment.centerRight : Alignment.centerLeft,
+//                       child: Container(
+//                         padding: EdgeInsets.all(10),
+//                         margin: EdgeInsets.all(5),
+//                         decoration: BoxDecoration(
+//                           color: isMe ? Colors.green : Colors.grey[700],
+//                           borderRadius: BorderRadius.circular(10),
+//                         ),
+//                         child: Text(
+//                           messageData['text'],
+//                           style: TextStyle(color: Colors.white),
+//                         ),
+//                       ),
+//                     ),
+//                   );
+//                 }
+
+//                 return ListView(
+//                   reverse: true,
+//                   children: messageWidgets,
+//                 );
+//               },
+//             ),
+//           ),
+//           Padding(
+//             padding: const EdgeInsets.all(8.0),
+//             child: Row(
+//               children: [
+//                 Expanded(
+//                   child: TextField(
+//                     controller: _messageController,
+//                     decoration: InputDecoration(hintText: 'Enter message...'),
+//                   ),
+//                 ),
+//                 IconButton(
+//                   icon: Icon(Icons.send, color: Colors.green),
+//                   onPressed: sendMessage,
+//                 ),
+//               ],
+//             ),
+//           ),
+//         ],
+//       ),
+//     );
+//   }
+// }
+
+
+
+//@@@new code video call k sath wala
+
 
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:intl/intl.dart'; // For formatting date and time
 
 class ChatScreen extends StatefulWidget {
   final String chatPartnerId;
@@ -148,12 +271,46 @@ class _ChatScreenState extends State<ChatScreen> {
     }
   }
 
+  // Simulate starting a voice call
+  Future<void> startVoiceCall() async {
+    await saveCallToFirestore('voice');
+    // Integrate voice call API here (e.g., Agora, Twilio)
+    print('Voice call started with ${widget.chatPartnerName}');
+  }
+
+  // Simulate starting a video call
+  Future<void> startVideoCall() async {
+    await saveCallToFirestore('video');
+    // Integrate video call API here (e.g., Agora, Twilio)
+    print('Video call started with ${widget.chatPartnerName}');
+  }
+
+  // Save the call details to Firestore
+  Future<void> saveCallToFirestore(String callType) async {
+    await _firestore.collection('calls').add({
+      'caller': _auth.currentUser!.uid,
+      'receiver': widget.chatPartnerId,
+      'callType': callType, // 'voice' or 'video'
+      'timestamp': FieldValue.serverTimestamp(),
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: Text(widget.chatPartnerName),
         backgroundColor: Colors.black,
+        actions: [
+          IconButton(
+            icon: Icon(Icons.call),
+            onPressed: startVoiceCall, // Start voice call
+          ),
+          IconButton(
+            icon: Icon(Icons.videocam),
+            onPressed: startVideoCall, // Start video call
+          ),
+        ],
       ),
       body: Column(
         children: [
