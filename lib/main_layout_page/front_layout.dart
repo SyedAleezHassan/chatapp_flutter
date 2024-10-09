@@ -44,7 +44,7 @@ class _tabBarPageState extends State<tabBarPage> {
           ),
           body: TabBarView(children: [
             ChatListPage(),
-            mainStory(),
+            StoryPage(),
             mainCalls(),
           ]),
         ));
