@@ -1,133 +1,109 @@
 import 'package:flutter/material.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 class mainCalls extends StatelessWidget {
-  // Sample list of call logs
-  final List<Map<String, dynamic>> callLogs = [
-    {
-      'name': 'John',
-      'time': 'Today, 2:30 PM',
-      'callType': 'voice', // 'voice' or 'video'
-      'status': 'received', // 'missed', 'received', 'outgoing'
-      'imageUrl': 'https://via.placeholder.com/150',
-    },
-    {
-      'name': 'Emily',
-      'time': 'Yesterday, 5:15 PM',
-      'callType': 'video',
-      'status': 'missed',
-      'imageUrl': 'https://via.placeholder.com/150',
-    },
-    {
-      'name': 'Alex',
-      'time': 'Yesterday, 3:00 PM',
-      'callType': 'voice',
-      'status': 'outgoing',
-      'imageUrl': 'https://via.placeholder.com/150',
-    },
-    {
-      'name': 'Sophia',
-      'time': 'Today, 10:00 AM',
-      'callType': 'video',
-      'status': 'received',
-      'imageUrl': 'https://via.placeholder.com/150',
-    },
-  ];
+  final FirebaseAuth _auth = FirebaseAuth.instance;
+  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
   @override
   Widget build(BuildContext context) {
+    String currentUserId = _auth.currentUser!.uid;
+
     return Scaffold(
-      // Set the background to black
-      body: ListView.builder(
-        itemCount: callLogs.length,
-        itemBuilder: (context, index) {
-          return _buildCallItem(
-            callLogs[index]['name'],
-            callLogs[index]['time'],
-            callLogs[index]['callType'],
-            callLogs[index]['status'],
-            callLogs[index]['imageUrl'],
+      appBar: AppBar(
+        title: Text('Calls'),
+        backgroundColor: Colors.black,
+      ),
+      body: StreamBuilder<QuerySnapshot>(
+        stream: _firestore
+            .collection('calls')
+            .where('caller', isEqualTo: currentUserId)
+            .snapshots(),
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return Center(child: CircularProgressIndicator());
+          }
+
+          if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
+            return Center(child: Text('No calls found.'));
+          }
+
+          List<QueryDocumentSnapshot> outgoingCalls = snapshot.data!.docs;
+
+          return FutureBuilder<QuerySnapshot>(
+            future: _firestore
+                .collection('calls')
+                .where('receiver', isEqualTo: currentUserId)
+                .get(),
+            builder: (context, incomingSnapshot) {
+              if (incomingSnapshot.connectionState == ConnectionState.waiting) {
+                return Center(child: CircularProgressIndicator());
+              }
+
+              List<QueryDocumentSnapshot> calls = [...outgoingCalls];
+              if (incomingSnapshot.hasData) {
+                calls.addAll(incomingSnapshot.data!.docs);
+              }
+
+              return ListView.builder(
+                itemCount: calls.length,
+                itemBuilder: (context, index) {
+                  var call = calls[index].data() as Map<String, dynamic>;
+                  String callType = call['callType'];
+                  String caller = call['caller'];
+                  String receiver = call['receiver'];
+                  Timestamp timestamp = call['timestamp'];
+
+                  // Fetch receiver details from Firestore
+                  return FutureBuilder<DocumentSnapshot>(
+                    future: _firestore.collection('users').doc(receiver).get(),
+                    builder: (context, userSnapshot) {
+                      if (userSnapshot.connectionState ==
+                          ConnectionState.waiting) {
+                        return ListTile(
+                          leading: CircleAvatar(
+                            backgroundColor: Colors.grey,
+                          ),
+                          title: Text('Loading...'),
+                          subtitle: Text(''),
+                        );
+                      }
+
+                      if (!userSnapshot.hasData || !userSnapshot.data!.exists) {
+                        return ListTile(
+                          leading: CircleAvatar(
+                            backgroundColor: Colors.grey,
+                          ),
+                          title: Text('User not found'),
+                          subtitle: Text(''),
+                        );
+                      }
+
+                      var receiverData =
+                          userSnapshot.data!.data() as Map<String, dynamic>;
+                      String receiverName = receiverData['name'];
+                      String receiverPhotoUrl = receiverData['photoUrl'];
+
+                      return ListTile(
+                        leading: CircleAvatar(
+                          backgroundImage: NetworkImage(receiverPhotoUrl),
+                        ),
+                        title: Text(receiverName),
+                        subtitle: Text(
+                            '${callType == 'outgoing' ? 'Outgoing' : 'Incoming'} Call - ${timestamp.toDate()}'),
+                        onTap: () {
+                          // Implement call details or other action when tapped
+                        },
+                      );
+                    },
+                  );
+                },
+              );
+            },
           );
         },
       ),
     );
-  }
-
-  // Build each call log item
-  Widget _buildCallItem(String name, String time, String callType, String status, String imageUrl) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 10.0),
-      child: Row(
-        children: [
-          // Profile picture
-          CircleAvatar(
-            radius: 30,
-            backgroundImage: NetworkImage(imageUrl), // Replace with real image URL
-          ),
-          SizedBox(width: 15),
-          // Name and time column
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  name,
-                  style: TextStyle (fontSize: 18, fontWeight: FontWeight.bold),
-                ),
-                SizedBox(height: 5),
-                Row(
-                  children: [
-                    // Call status icon (missed, received, outgoing)
-                    Icon(
-                      _getStatusIcon(status),
-                      color: _getStatusColor(status),
-                      size: 16,
-                    ),
-                    SizedBox(width: 5),
-                    // Call time
-                    Text(
-                      time,
-                      style: TextStyle( fontSize: 14),
-                    ),
-                  ],
-                ),
-              ],
-            ),
-          ),
-          // Call type icon (voice or video)
-          Icon(
-            callType == 'voice' ? Icons.phone : Icons.videocam,
-            color: Colors.greenAccent,
-          ),
-        ],
-      ),
-    );
-  }
-
-  // Get the appropriate status icon for the call
-  IconData _getStatusIcon(String status) {
-    switch (status) {
-      case 'missed':
-        return Icons.call_missed;
-      case 'outgoing':
-        return Icons.call_made;
-      case 'received':
-        return Icons.call_received;
-      default:
-        return Icons.call;
-    }
-  }
-
-  // Get the color for the call status
-  Color _getStatusColor(String status) {
-    switch (status) {
-      case 'missed':
-        return Colors.redAccent;
-      case 'outgoing':
-        return Colors.greenAccent;
-      case 'received':
-        return Colors.greenAccent;
-      default:
-        return Colors.black;
-    }
   }
 }

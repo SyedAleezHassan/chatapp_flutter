@@ -173,7 +173,6 @@
 //   }
 // }
 
-
 //   // Function to choose the profile photo
 //   Future<String> _getProfilePhotoUrl(String userId) async {
 //     String photoUrl = '';
@@ -316,11 +315,7 @@
 //   }
 // }
 
-
-
-
 //newest code if rgisteration of the chat app in the form of circle
-
 
 // import 'dart:io';
 // import 'package:flutter/material.dart';
@@ -497,10 +492,7 @@
 //   }
 // }
 
-
-
 // very new code
-
 
 import 'dart:io';
 import 'package:flutter/material.dart';
@@ -534,7 +526,8 @@ class _RegistrationPageState extends State<RegistrationPage> {
     if (_formKey.currentState!.validate()) {
       try {
         // Create a new user
-        UserCredential userCredential = await _auth.createUserWithEmailAndPassword(
+        UserCredential userCredential =
+            await _auth.createUserWithEmailAndPassword(
           email: email,
           password: password,
         );
@@ -582,25 +575,30 @@ class _RegistrationPageState extends State<RegistrationPage> {
                     await _picker.pickImage(source: ImageSource.gallery);
                 if (pickedFile != null) {
                   _selectedImage = File(pickedFile.path);
-                  photoUrl = await _uploadImageToFirebase(_selectedImage!, userId);
+                  photoUrl =
+                      await _uploadImageToFirebase(_selectedImage!, userId);
                   // setState(() {}); // Update the state after the photo is selected
                 }
                 //yahan se syed sahab
-        //           await _firestore.collection('users').add({ 
-        //   // 'userId': _auth.currentUser!.uid,
-        //   'photoUrl': photoUrl,
-        //   // 'timestamp': FieldValue.serverTimestamp(),
-        // });
-        await _firestore.collection('users').doc(_auth.currentUser!.uid).set({
-  'name': name,
-  'email': email,
-  'phone': phoneNumber,
-  'uid': _auth.currentUser!.uid, // Add the user's UID as a field
-  'photoUrl': photoUrl,
-  // 'timestamp': FieldValue.serverTimestamp(),
-});
+                //           await _firestore.collection('users').add({
+                //   // 'userId': _auth.currentUser!.uid,
+                //   'photoUrl': photoUrl,
+                //   // 'timestamp': FieldValue.serverTimestamp(),
+                // });
+                await _firestore
+                    .collection('users')
+                    .doc(_auth.currentUser!.uid)
+                    .set({
+                  'name': name,
+                  'email': email,
+                  'phone': phoneNumber,
+                  'uid':
+                      _auth.currentUser!.uid, // Add the user's UID as a field
+                  'photoUrl': photoUrl,
+                  // 'timestamp': FieldValue.serverTimestamp(),
+                });
 
-        //yahan tak syed sahab
+                //yahan tak syed sahab
                 // Navigate to the tabBarPage after selecting the image
                 Navigator.pushReplacement(
                   context,
