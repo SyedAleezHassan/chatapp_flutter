@@ -135,6 +135,7 @@
 //   }
 // }
 
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
@@ -146,10 +147,6 @@ class ChatListPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      // appBar: AppBar(
-      //   title: Text('Chats'),
-      //   backgroundColor: Colors.black,
-      // ),
       body: StreamBuilder<QuerySnapshot>(
         stream: _firestore.collection('users').snapshots(),
         builder: (context, snapshot) {
@@ -159,18 +156,29 @@ class ChatListPage extends StatelessWidget {
 
           final users = snapshot.data!.docs;
           List<Widget> userTiles = [];
+          final currentUser = FirebaseAuth.instance.currentUser;
+
           for (var user in users) {
             var userData = user.data() as Map<String, dynamic>;
+
+            // Skip the current user's tile
+            if (userData['uid'] == currentUser?.uid) {
+              continue;
+            }
+
             userTiles.add(ListTile(
-              leading: CircleAvatar(child: Icon(Icons.person)),
+              leading: CircleAvatar(
+                backgroundImage: userData['photoUrl'] != null
+                    ? NetworkImage(userData['photoUrl'])
+                    : AssetImage('assets/default_profile.png') as ImageProvider,
+              ),
               title: Text(userData['name']),
               subtitle: Text(userData['phone']),
               onTap: () {
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: (context) =>
-                        ChatScreen(userData['uid'], userData['name']),
+                    builder: (context) => ChatScreen(userData['uid'], userData['name']),
                   ),
                 );
               },
