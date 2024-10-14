@@ -8,14 +8,15 @@
 // ];
 // TextEditingController nameController = TextEditingController();
 // TextEditingController numController = TextEditingController();
-// class mainChat extends StatefulWidget {
-//   const mainChat({super.key});
+
+// class ChatListPage extends StatefulWidget {
+//   const ChatListPage({super.key});
 
 //   @override
-//   State<mainChat> createState() => _mainChatState();
+//   State<ChatListPage> createState() => ChatListPage();
 // }
 
-// class _mainChatState extends State<mainChat> {
+// class ChatListPage extends State<ChatListPage> {
 //   @override
 //   Widget build(BuildContext context) {
 //     return Scaffold(
@@ -60,7 +61,8 @@
 //                   Navigator.push(
 //                       context,
 //                       MaterialPageRoute(
-//                           builder: (context) => SendMesssageScreen(contactName: [chatList[index]['name']],)));
+//                           builder: (context) =>
+//                               ChatScreen(userData['uid'], userData['name'])));
 //                 },
 //               ),
 //             );
@@ -166,20 +168,96 @@ class ChatListPage extends StatelessWidget {
               continue;
             }
 
-            userTiles.add(ListTile(
-              leading: CircleAvatar(
-                backgroundImage: userData['photoUrl'] != null
-                    ? NetworkImage(userData['photoUrl'])
-                    : AssetImage('assets/default_profile.png') as ImageProvider,
-              ),
-              title: Text(userData['name']),
-              subtitle: Text(userData['phone']),
-              onTap: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => ChatScreen(userData['uid'], userData['name']),
+            userTiles.add(StreamBuilder<DocumentSnapshot>(
+              stream: _firestore
+                  .collection('chats')
+                  .doc(getChatRoomId(currentUser!.uid, userData['uid']))
+                  .snapshots(),
+              builder: (context, chatSnapshot) {
+                if (!chatSnapshot.hasData) {
+                  return ListTile(
+                    leading: CircleAvatar(
+                      backgroundImage: userData['photoUrl'] != null
+                          ? NetworkImage(userData['photoUrl'])
+                          : AssetImage('assets/default_profile.png')
+                              as ImageProvider,
+                    ),
+                    title: Text(userData['name']),
+                    subtitle: Text(userData['phone']),
+                    onTap: () {
+                      print('Tile tapped for ${userData['name']}');
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => ChatScreen(
+                            userData['uid'],
+                            userData['name'],
+                          ),
+                        ),
+                      );
+                    },
+                  );
+                }
+
+                var chatData =
+                    chatSnapshot.data?.data() as Map<String, dynamic>?;
+                String lastMessage = chatData?['lastMessage'] ?? '';
+                int unreadCount =
+                    chatData?['unreadCount_${currentUser.uid}'] ?? 0;
+
+                return ListTile(
+                  leading: CircleAvatar(
+                    backgroundImage: userData['photoUrl'] != null
+                        ? NetworkImage(userData['photoUrl'])
+                        : AssetImage('assets/default_profile.png')
+                            as ImageProvider,
                   ),
+                  title: Text(
+                    userData['name'],
+                    style: TextStyle(
+                      fontWeight:
+                          unreadCount > 0 ? FontWeight.bold : FontWeight.normal,
+                    ),
+                  ),
+                  subtitle: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        lastMessage,
+                        style: TextStyle(
+                          fontWeight: unreadCount > 0
+                              ? FontWeight.bold
+                              : FontWeight.normal,
+                        ),
+                      ),
+                      if (unreadCount > 0)
+                        Text(
+                          '$unreadCount unread message(s)',
+                          style: TextStyle(color: Colors.red),
+                        ),
+                    ],
+                  ),
+                  onTap: () {
+                    print('Navigating to chat screen for ${userData['name']}');
+
+                    // Reset unread count for the chat room
+                    _firestore
+                        .collection('chats')
+                        .doc(getChatRoomId(currentUser.uid, userData['uid']))
+                        .update({
+                      'unreadCount_${currentUser.uid}': 0,
+                    });
+
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => ChatScreen(
+                          userData['uid'],
+                          userData['name'],
+                        ),
+                      ),
+                    );
+                  },
                 );
               },
             ));
@@ -189,5 +267,11 @@ class ChatListPage extends StatelessWidget {
         },
       ),
     );
+  }
+
+  String getChatRoomId(String userId, String chatPartnerId) {
+    return userId.hashCode <= chatPartnerId.hashCode
+        ? '$userId-$chatPartnerId'
+        : '$chatPartnerId-$userId';
   }
 }
