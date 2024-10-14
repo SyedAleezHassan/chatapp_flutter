@@ -396,14 +396,24 @@ import 'package:firebase_auth/firebase_auth.dart';
 class ChatScreen extends StatefulWidget {
   final String chatPartnerId;
   final String chatPartnerName;
+  
 
   ChatScreen(this.chatPartnerId, this.chatPartnerName);
+  
 
   @override
+  
   _ChatScreenState createState() => _ChatScreenState();
+  
 }
 
 class _ChatScreenState extends State<ChatScreen> {
+  @override
+void initState() {
+  super.initState();
+  listenForIncomingCalls();
+}
+
   final _firestore = FirebaseFirestore.instance;
   final _auth = FirebaseAuth.instance;
   final TextEditingController _messageController = TextEditingController();
@@ -672,8 +682,7 @@ class _ChatScreenState extends State<ChatScreen> {
       ),
 
 ///////////////
-      // Rest of the ChatScreen code remains the same
-      // ...
+      
     );
   }
 }
@@ -687,8 +696,10 @@ class CallScreen extends StatelessWidget {
       {required this.receiverName,
       required this.receiverId,
       required String callId});
+      
 
   @override
+  
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
