@@ -294,6 +294,7 @@ class _ChatScreenState extends State<ChatScreen> {
       'timestamp': FieldValue.serverTimestamp(),
     });
   }
+  //
 
   @override
   Widget build(BuildContext context) {
