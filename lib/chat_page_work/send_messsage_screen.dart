@@ -396,23 +396,19 @@ import 'package:firebase_auth/firebase_auth.dart';
 class ChatScreen extends StatefulWidget {
   final String chatPartnerId;
   final String chatPartnerName;
-  
 
   ChatScreen(this.chatPartnerId, this.chatPartnerName);
-  
 
   @override
-  
   _ChatScreenState createState() => _ChatScreenState();
-  
 }
 
 class _ChatScreenState extends State<ChatScreen> {
   @override
-void initState() {
-  super.initState();
-  listenForIncomingCalls();
-}
+  void initState() {
+    super.initState();
+    listenForIncomingCalls();
+  }
 
   final _firestore = FirebaseFirestore.instance;
   final _auth = FirebaseAuth.instance;
@@ -595,24 +591,126 @@ void initState() {
   }
 
   @override
+//   Widget build(BuildContext context) {
+//     return Scaffold(
+//       appBar: AppBar(
+//         title: Text(widget.chatPartnerName),
+//         backgroundColor: Colors.black,
+//         actions: [
+//           IconButton(
+//             icon: Icon(Icons.call),
+//             onPressed: startVoiceCall,
+//           ),
+//           IconButton(
+//             icon: Icon(Icons.videocam),
+//             onPressed: () {}, // Start video call
+//           ),
+//         ],
+//       ),
+
+//       ///////////
+//       body: Column(
+//         children: [
+//           Expanded(
+//             child: StreamBuilder<QuerySnapshot>(
+//               stream: _firestore
+//                   .collection('chats')
+//                   .doc(getChatRoomId(
+//                       _auth.currentUser!.uid, widget.chatPartnerId))
+//                   .collection('messages')
+//                   .orderBy('timestamp', descending: true)
+//                   .snapshots(),
+//               builder: (context, snapshot) {
+//                 if (!snapshot.hasData) {
+//                   return Center(child: CircularProgressIndicator());
+//                 }
+
+//                 final messages = snapshot.data!.docs;
+//                 List<Widget> messageWidgets = [];
+//                 for (var message in messages) {
+//                   var messageData = message.data() as Map<String, dynamic>;
+//                   var isMe = messageData['sender'] == _auth.currentUser!.uid;
+//                   messageWidgets.add(
+//                     Align(
+//                       alignment:
+//                           isMe ? Alignment.centerRight : Alignment.centerLeft,
+//                       child: Container(
+//                         padding: EdgeInsets.all(10),
+//                         margin: EdgeInsets.all(5),
+//                         decoration: BoxDecoration(
+//                           color: isMe ? Colors.green : Colors.grey[700],
+//                           borderRadius: BorderRadius.circular(10),
+//                         ),
+//                         child: Text(
+//                           messageData['text'],
+//                           style: TextStyle(color: Colors.white),
+//                         ),
+//                       ),
+//                     ),
+//                   );
+//                 }
+
+//                 return ListView(
+//                   reverse: true,
+//                   children: messageWidgets,
+//                 );
+//               },
+//             ),
+//           ),
+//           Padding(
+//             padding: const EdgeInsets.all(8.0),
+//             child: Row(
+//               children: [
+//                 Expanded(
+//                   child: TextField(
+//                     controller: _messageController,
+//                     decoration: InputDecoration(hintText: 'Enter message...'),
+//                   ),
+//                 ),
+//                 IconButton(
+//                   icon: Icon(Icons.send, color: Colors.green),
+//                   onPressed: sendMessage,
+//                 ),
+//               ],
+//             ),
+//           ),
+//         ],
+//       ),
+
+// ///////////////
+
+//     );
+//   }
+
+//chatgpt wala start
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.black, // Set the background color to black
       appBar: AppBar(
-        title: Text(widget.chatPartnerName),
+        iconTheme: IconThemeData(
+            color: Colors.white), // Set the back arrow color to white
+        title: Text(
+          widget.chatPartnerName,
+          style: TextStyle(color: Colors.white),
+        ),
         backgroundColor: Colors.black,
+        shape: Border(
+          bottom: BorderSide(
+              color: Colors.white,
+              width: 2), // Add a white border at the bottom
+        ),
         actions: [
           IconButton(
-            icon: Icon(Icons.call),
+            icon: Icon(Icons.call, color: Colors.white),
             onPressed: startVoiceCall,
           ),
           IconButton(
-            icon: Icon(Icons.videocam),
+            icon: Icon(Icons.videocam, color: Colors.white),
             onPressed: () {}, // Start video call
           ),
         ],
       ),
 
-      ///////////
       body: Column(
         children: [
           Expanded(
@@ -626,7 +724,11 @@ void initState() {
                   .snapshots(),
               builder: (context, snapshot) {
                 if (!snapshot.hasData) {
-                  return Center(child: CircularProgressIndicator());
+                  return Center(
+                    child: CircularProgressIndicator(
+                      color: Colors.white,
+                    ),
+                  );
                 }
 
                 final messages = snapshot.data!.docs;
@@ -640,14 +742,19 @@ void initState() {
                           isMe ? Alignment.centerRight : Alignment.centerLeft,
                       child: Container(
                         padding: EdgeInsets.all(10),
-                        margin: EdgeInsets.all(5),
+                        margin:
+                            EdgeInsets.symmetric(vertical: 5, horizontal: 10),
                         decoration: BoxDecoration(
-                          color: isMe ? Colors.green : Colors.grey[700],
-                          borderRadius: BorderRadius.circular(10),
+                          color: isMe ? Colors.white : Colors.grey[800],
+                          borderRadius: BorderRadius.circular(15),
+                          border: Border.all(color: Colors.grey[600]!),
                         ),
                         child: Text(
                           messageData['text'],
-                          style: TextStyle(color: Colors.white),
+                          style: TextStyle(
+                            color: isMe ? Colors.black : Colors.white,
+                            fontSize: 14,
+                          ),
                         ),
                       ),
                     ),
@@ -668,11 +775,21 @@ void initState() {
                 Expanded(
                   child: TextField(
                     controller: _messageController,
-                    decoration: InputDecoration(hintText: 'Enter message...'),
+                    style: TextStyle(color: Colors.white),
+                    decoration: InputDecoration(
+                      hintText: 'Enter message...',
+                      hintStyle: TextStyle(color: Colors.grey[400]),
+                      filled: true,
+                      fillColor: Colors.grey[850],
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(10),
+                        borderSide: BorderSide.none,
+                      ),
+                    ),
                   ),
                 ),
                 IconButton(
-                  icon: Icon(Icons.send, color: Colors.green),
+                  icon: Icon(Icons.send, color: Colors.white),
                   onPressed: sendMessage,
                 ),
               ],
@@ -680,11 +797,10 @@ void initState() {
           ),
         ],
       ),
-
-///////////////
-      
     );
   }
+
+  //endddd
 }
 
 // CallScreen Component
@@ -696,10 +812,8 @@ class CallScreen extends StatelessWidget {
       {required this.receiverName,
       required this.receiverId,
       required String callId});
-      
 
   @override
-  
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(

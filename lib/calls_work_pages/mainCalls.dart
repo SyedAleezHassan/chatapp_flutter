@@ -7,14 +7,121 @@ class mainCalls extends StatelessWidget {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
   @override
+  // Widget build(BuildContext context) {
+  //   String currentUserId = _auth.currentUser!.uid;
+
+  //   return Scaffold(
+  //     appBar: AppBar(
+  //       title: Text('Calls'),
+  //       backgroundColor: Colors.black,
+  //     ),
+  //     body: StreamBuilder<QuerySnapshot>(
+  //       stream: _firestore
+  //           .collection('calls')
+  //           .where('caller', isEqualTo: currentUserId)
+  //           .snapshots(),
+  //       builder: (context, snapshot) {
+  //         if (snapshot.connectionState == ConnectionState.waiting) {
+  //           return Center(child: CircularProgressIndicator());
+  //         }
+
+  //         if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
+  //           return Center(child: Text('No calls found.'));
+  //         }
+
+  //         List<QueryDocumentSnapshot> outgoingCalls = snapshot.data!.docs;
+
+  //         return FutureBuilder<QuerySnapshot>(
+  //           future: _firestore
+  //               .collection('calls')
+  //               .where('receiver', isEqualTo: currentUserId)
+  //               .get(),
+  //           builder: (context, incomingSnapshot) {
+  //             if (incomingSnapshot.connectionState == ConnectionState.waiting) {
+  //               return Center(child: CircularProgressIndicator());
+  //             }
+
+  //             List<QueryDocumentSnapshot> calls = [...outgoingCalls];
+  //             if (incomingSnapshot.hasData) {
+  //               calls.addAll(incomingSnapshot.data!.docs);
+  //             }
+
+  //             return ListView.builder(
+  //               itemCount: calls.length,
+  //               itemBuilder: (context, index) {
+  //                 var call = calls[index].data() as Map<String, dynamic>;
+  //                 String callType = call['callType'];
+  //                 String caller = call['caller'];
+  //                 String receiver = call['receiver'];
+  //                 Timestamp timestamp = call['timestamp'];
+
+  //                 // Fetch receiver details from Firestore
+  //                 return FutureBuilder<DocumentSnapshot>(
+  //                   future: _firestore.collection('users').doc(receiver).get(),
+  //                   builder: (context, userSnapshot) {
+  //                     if (userSnapshot.connectionState ==
+  //                         ConnectionState.waiting) {
+  //                       return ListTile(
+  //                         leading: CircleAvatar(
+  //                           backgroundColor: Colors.grey,
+  //                         ),
+  //                         title: Text('Loading...'),
+  //                         subtitle: Text(''),
+  //                       );
+  //                     }
+
+  //                     if (!userSnapshot.hasData || !userSnapshot.data!.exists) {
+  //                       return ListTile(
+  //                         leading: CircleAvatar(
+  //                           backgroundColor: Colors.grey,
+  //                         ),
+  //                         title: Text('User not found'),
+  //                         subtitle: Text(''),
+  //                       );
+  //                     }
+
+  //                     var receiverData =
+  //                         userSnapshot.data!.data() as Map<String, dynamic>;
+  //                     String receiverName = receiverData['name'];
+  //                     String receiverPhotoUrl = receiverData['photoUrl'];
+
+  //                     return ListTile(
+  //                       leading: CircleAvatar(
+  //                         backgroundImage: NetworkImage(receiverPhotoUrl),
+  //                       ),
+  //                       title: Text(receiverName),
+  //                       subtitle: Text(
+  //                           '${callType == 'outgoing' ? 'Outgoing' : 'Incoming'} Call - ${timestamp.toDate()}'),
+  //                       onTap: () {
+  //                         // Implement call details or other action when tapped
+  //                       },
+  //                     );
+  //                   },
+  //                 );
+  //               },
+  //             );
+  //           },
+  //         );
+  //       },
+  //     ),
+  //   );
+  // }
+
+//chatgpt wal deisgn
+
   Widget build(BuildContext context) {
     String currentUserId = _auth.currentUser!.uid;
 
     return Scaffold(
-      appBar: AppBar(
-        title: Text('Calls'),
-        backgroundColor: Colors.black,
-      ),
+      backgroundColor: Colors.black,
+      // appBar: AppBar(
+      //   title: Text(
+      //     'Calls',
+      //     style: TextStyle(color: Colors.white),
+      //   ),
+      //   backgroundColor: Colors.black,
+      //   elevation: 0,
+      // ),
       body: StreamBuilder<QuerySnapshot>(
         stream: _firestore
             .collection('calls')
@@ -22,11 +129,18 @@ class mainCalls extends StatelessWidget {
             .snapshots(),
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
-            return Center(child: CircularProgressIndicator());
+            return Center(
+              child: CircularProgressIndicator(color: Colors.white),
+            );
           }
 
           if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
-            return Center(child: Text('No calls found.'));
+            return Center(
+              child: Text(
+                'No calls found.',
+                style: TextStyle(color: Colors.white),
+              ),
+            );
           }
 
           List<QueryDocumentSnapshot> outgoingCalls = snapshot.data!.docs;
@@ -38,7 +152,9 @@ class mainCalls extends StatelessWidget {
                 .get(),
             builder: (context, incomingSnapshot) {
               if (incomingSnapshot.connectionState == ConnectionState.waiting) {
-                return Center(child: CircularProgressIndicator());
+                return Center(
+                  child: CircularProgressIndicator(color: Colors.white),
+                );
               }
 
               List<QueryDocumentSnapshot> calls = [...outgoingCalls];
@@ -55,7 +171,6 @@ class mainCalls extends StatelessWidget {
                   String receiver = call['receiver'];
                   Timestamp timestamp = call['timestamp'];
 
-                  // Fetch receiver details from Firestore
                   return FutureBuilder<DocumentSnapshot>(
                     future: _firestore.collection('users').doc(receiver).get(),
                     builder: (context, userSnapshot) {
@@ -63,9 +178,12 @@ class mainCalls extends StatelessWidget {
                           ConnectionState.waiting) {
                         return ListTile(
                           leading: CircleAvatar(
-                            backgroundColor: Colors.grey,
+                            backgroundColor: Colors.grey[800],
                           ),
-                          title: Text('Loading...'),
+                          title: Text(
+                            'Loading...',
+                            style: TextStyle(color: Colors.white),
+                          ),
                           subtitle: Text(''),
                         );
                       }
@@ -73,9 +191,12 @@ class mainCalls extends StatelessWidget {
                       if (!userSnapshot.hasData || !userSnapshot.data!.exists) {
                         return ListTile(
                           leading: CircleAvatar(
-                            backgroundColor: Colors.grey,
+                            backgroundColor: Colors.grey[800],
                           ),
-                          title: Text('User not found'),
+                          title: Text(
+                            'User not found',
+                            style: TextStyle(color: Colors.white),
+                          ),
                           subtitle: Text(''),
                         );
                       }
@@ -88,10 +209,19 @@ class mainCalls extends StatelessWidget {
                       return ListTile(
                         leading: CircleAvatar(
                           backgroundImage: NetworkImage(receiverPhotoUrl),
+                          backgroundColor: Colors.grey[800],
                         ),
-                        title: Text(receiverName),
+                        title: Text(
+                          receiverName,
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
                         subtitle: Text(
-                            '${callType == 'outgoing' ? 'Outgoing' : 'Incoming'} Call - ${timestamp.toDate()}'),
+                          '${callType == 'outgoing' ? 'Outgoing' : 'Incoming'} Call - ${timestamp.toDate()}',
+                          style: TextStyle(color: Colors.white70),
+                        ),
                         onTap: () {
                           // Implement call details or other action when tapped
                         },
@@ -106,4 +236,5 @@ class mainCalls extends StatelessWidget {
       ),
     );
   }
+//end
 }

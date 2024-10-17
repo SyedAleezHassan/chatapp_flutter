@@ -42,9 +42,54 @@ class _LoginPageState extends State<LoginPage> {
   }
 
   @override
+  // Widget build(BuildContext context) {
+  //   return Scaffold(
+  //     appBar: AppBar(title: Text("Login")),
+  //     body: Padding(
+  //       padding: const EdgeInsets.all(16.0),
+  //       child: Column(
+  //         mainAxisAlignment: MainAxisAlignment.center,
+  //         children: [
+  //           TextField(
+  //             controller: _emailController,
+  //             decoration: InputDecoration(labelText: "Email"),
+  //             keyboardType: TextInputType.emailAddress,
+  //           ),
+  //           TextField(
+  //             controller: _passwordController,
+  //             decoration: InputDecoration(labelText: "Password"),
+  //             obscureText: true,
+  //           ),
+  //           SizedBox(height: 20),
+  //           _isLoading
+  //               ? CircularProgressIndicator()
+  //               : ElevatedButton(
+  //                   onPressed: _login,
+  //                   child: Text("Login"),
+  //                 ),
+  //           TextButton(
+  //             onPressed: () {
+  //               // Navigate to a registration page or password reset
+  //             },
+  //             child: Text("Don't have an account? Sign up"),
+  //           ),
+  //         ],
+  //       ),
+  //     ),
+  //   );
+  // }
+
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text("Login")),
+      backgroundColor: Colors.black,
+      appBar: AppBar(
+        title: Text(
+          "Login",
+          style: TextStyle(color: Colors.white),
+        ),
+        backgroundColor: Colors.black,
+        elevation: 0,
+      ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
@@ -52,26 +97,72 @@ class _LoginPageState extends State<LoginPage> {
           children: [
             TextField(
               controller: _emailController,
-              decoration: InputDecoration(labelText: "Email"),
+              style: TextStyle(color: Colors.white),
+              decoration: InputDecoration(
+                labelText: "Email",
+                labelStyle: TextStyle(color: Colors.white70),
+                enabledBorder: OutlineInputBorder(
+                  borderSide: BorderSide(color: Colors.white),
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                focusedBorder: OutlineInputBorder(
+                  borderSide: BorderSide(color: Colors.white),
+                  borderRadius: BorderRadius.circular(8),
+                ),
+              ),
               keyboardType: TextInputType.emailAddress,
             ),
+            SizedBox(height: 20),
             TextField(
               controller: _passwordController,
-              decoration: InputDecoration(labelText: "Password"),
+              style: TextStyle(color: Colors.white),
+              decoration: InputDecoration(
+                labelText: "Password",
+                labelStyle: TextStyle(color: Colors.white70),
+                enabledBorder: OutlineInputBorder(
+                  borderSide: BorderSide(color: Colors.white),
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                focusedBorder: OutlineInputBorder(
+                  borderSide: BorderSide(color: Colors.white),
+                  borderRadius: BorderRadius.circular(8),
+                ),
+              ),
               obscureText: true,
             ),
-            SizedBox(height: 20),
+            SizedBox(height: 30),
             _isLoading
-                ? CircularProgressIndicator()
+                ? CircularProgressIndicator(
+                    valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                  )
                 : ElevatedButton(
                     onPressed: _login,
-                    child: Text("Login"),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.white, // Button color
+                      foregroundColor: Colors.black, // Text color
+                      padding:
+                          EdgeInsets.symmetric(horizontal: 50, vertical: 15),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                    ),
+                    child: Text(
+                      "Login",
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 16,
+                      ),
+                    ),
                   ),
+            SizedBox(height: 20),
             TextButton(
               onPressed: () {
                 // Navigate to a registration page or password reset
               },
-              child: Text("Don't have an account? Sign up"),
+              child: Text(
+                "Don't have an account? Sign up",
+                style: TextStyle(color: Colors.white70),
+              ),
             ),
           ],
         ),

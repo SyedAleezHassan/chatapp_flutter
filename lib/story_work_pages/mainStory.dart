@@ -1,5 +1,3 @@
-
-
 //new code
 
 import 'package:flutter/material.dart';
@@ -74,15 +72,21 @@ class _StoryPageState extends State<StoryPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text('Stories'),
-        actions: [
-          IconButton(
-            icon: Icon(Icons.add),
-            onPressed: uploadStory,
-          ),
-        ],
-      ),
+      backgroundColor: Colors.black,
+      floatingActionButton: FloatingActionButton(
+          child: Icon(Icons.add),
+          onPressed: () {
+            uploadStory();
+          }),
+      // appBar: AppBar(
+      //   title: Text('Stories'),
+      //   actions: [
+      //     IconButton(
+      //       icon: Icon(Icons.add),
+      //       onPressed: uploadStory,
+      //     ),
+      //   ],
+      // ),
       body: StreamBuilder<QuerySnapshot>(
         stream: getRecentStories(),
         builder: (context, snapshot) {
@@ -112,16 +116,19 @@ class _StoryPageState extends State<StoryPage> {
                     children: [
                       GestureDetector(
                         onTap: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) =>
-                              StoryViewPage(imageUrl: imageUrl),
-                        ),
-                      );
-                    },
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) =>
+                                  StoryViewPage(imageUrl: imageUrl),
+                            ),
+                          );
+                        },
                         child: Column(
                           children: [
+                            SizedBox(
+                              height: 20,
+                            ),
                             CircleAvatar(
                               radius: 40,
                               backgroundImage: NetworkImage(imageUrl),
@@ -130,9 +137,16 @@ class _StoryPageState extends State<StoryPage> {
                             SizedBox(height: 5),
                             Text(
                               nameSnapshot.data!,
-                              style: TextStyle(fontWeight: FontWeight.bold),
+                              style: TextStyle(
+                                  color: Colors.white,
+                                  fontWeight: FontWeight.bold),
                             ),
-                            Text('Posted at $formattedTime'),
+                            Text(
+                              'Posted at $formattedTime',
+                              style: TextStyle(
+                                  color: Colors.white,
+                                  fontWeight: FontWeight.bold),
+                            ),
                           ],
                         ),
                       ),
@@ -156,6 +170,116 @@ class _StoryPageState extends State<StoryPage> {
       ),
     );
   }
+
+//chatgrp desing
+  // Widget build(BuildContext context) {
+  //   return Scaffold(
+  //     backgroundColor: Colors.black, // Set the background color to black
+  //     body: Stack(
+  //       children: [
+  //         // Main content (stories)
+  //         StreamBuilder<QuerySnapshot>(
+  //           stream: getRecentStories(),
+  //           builder: (context, snapshot) {
+  //             if (!snapshot.hasData) {
+  //               return Center(
+  //                   child: CircularProgressIndicator(color: Colors.white));
+  //             }
+
+  //             final stories = snapshot.data!.docs;
+  //             List<Widget> storyWidgets = [];
+
+  //             for (var story in stories) {
+  //               var storyData = story.data() as Map<String, dynamic>;
+  //               var imageUrl = storyData['imageUrl'];
+  //               var userId = storyData['userId'];
+  //               var timestamp = (storyData['timestamp'] as Timestamp).toDate();
+  //               var formattedTime = DateFormat('hh:mm a').format(timestamp);
+
+  //               storyWidgets.add(
+  //                 FutureBuilder<String>(
+  //                   future: getUserName(userId),
+  //                   builder: (context, nameSnapshot) {
+  //                     if (!nameSnapshot.hasData) {
+  //                       return CircularProgressIndicator(color: Colors.white);
+  //                     }
+
+  //                     return Column(
+  //                       children: [
+  //                         GestureDetector(
+  //                           onTap: () {
+  //                             Navigator.push(
+  //                               context,
+  //                               MaterialPageRoute(
+  //                                 builder: (context) =>
+  //                                     StoryViewPage(imageUrl: imageUrl),
+  //                               ),
+  //                             );
+  //                           },
+  //                           child: Column(
+  //                             children: [
+  //                               CircleAvatar(
+  //                                 radius: 40,
+  //                                 backgroundImage: NetworkImage(imageUrl),
+  //                                 backgroundColor: Colors.grey[300],
+  //                               ),
+  //                               SizedBox(height: 5),
+  //                               Text(
+  //                                 nameSnapshot.data!,
+  //                                 style: TextStyle(
+  //                                   fontWeight: FontWeight.bold,
+  //                                   color: Colors
+  //                                       .white, // Set the text color to white
+  //                                 ),
+  //                               ),
+  //                               Text(
+  //                                 'Posted at $formattedTime',
+  //                                 style: TextStyle(
+  //                                     color: Colors
+  //                                         .white70), // Light grey text for the time
+  //                               ),
+  //                             ],
+  //                           ),
+  //                         ),
+  //                         Divider(color: Colors.white), // White divider
+  //                       ],
+  //                     );
+  //                   },
+  //                 ),
+  //               );
+  //             }
+
+  //             return SingleChildScrollView(
+  //               child: Padding(
+  //                 padding: const EdgeInsets.only(
+  //                     top: 60.0), // Offset to avoid overlapping the add button
+  //                 child: Wrap(
+  //                   alignment: WrapAlignment.center,
+  //                   spacing: 16,
+  //                   runSpacing: 16,
+  //                   children: storyWidgets,
+  //                 ),
+  //               ),
+  //             );
+  //           },
+  //         ),
+
+  //         // Floating action button for the add icon
+  //         Positioned(
+  //           top: 16,
+  //           right: 16,
+  //           child: FloatingActionButton(
+  //             backgroundColor: Colors.black, // Black background for the FAB
+  //             child: Icon(Icons.add, color: Colors.white), // White add icon
+  //             onPressed: uploadStory,
+  //           ),
+  //         ),
+  //       ],
+  //     ),
+  //   );
+  // }
+
+//emdddd
 }
 
 
