@@ -17,7 +17,7 @@ class mainCalls extends StatelessWidget {
   //     ),
   //     body: StreamBuilder<QuerySnapshot>(
   //       stream: _firestore
-  //           .collection('calls')
+  //           .collection('active_calls')
   //           .where('caller', isEqualTo: currentUserId)
   //           .snapshots(),
   //       builder: (context, snapshot) {
@@ -124,7 +124,7 @@ class mainCalls extends StatelessWidget {
       // ),
       body: StreamBuilder<QuerySnapshot>(
         stream: _firestore
-            .collection('calls')
+            .collection('active_calls')
             .where('caller', isEqualTo: currentUserId)
             .snapshots(),
         builder: (context, snapshot) {
@@ -147,7 +147,7 @@ class mainCalls extends StatelessWidget {
 
           return FutureBuilder<QuerySnapshot>(
             future: _firestore
-                .collection('calls')
+                .collection('active_calls')
                 .where('receiver', isEqualTo: currentUserId)
                 .get(),
             builder: (context, incomingSnapshot) {
