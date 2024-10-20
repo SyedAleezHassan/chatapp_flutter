@@ -254,29 +254,34 @@
 //   }
 
 // //new send message func
-// Future<void> sendMessage() async {
-//   if (_messageController.text.isNotEmpty) {
-//     String chatRoomId = getChatRoomId(_auth.currentUser!.uid, widget.chatPartnerId);
+//   Future<void> sendMessage() async {
+//     if (_messageController.text.isNotEmpty) {
+//       String chatRoomId =
+//           getChatRoomId(_auth.currentUser!.uid, widget.chatPartnerId);
 
-//     // Send message with 'unread' status
-//     await _firestore.collection('chats').doc(chatRoomId).collection('messages').add({
-//       'sender': _auth.currentUser!.uid,
-//       'receiver': widget.chatPartnerId,
-//       'text': _messageController.text,
-//       'timestamp': FieldValue.serverTimestamp(),
-//       'unread': true,
-//     });
+//       // Send message with 'unread' status
+//       await _firestore
+//           .collection('chats')
+//           .doc(chatRoomId)
+//           .collection('messages')
+//           .add({
+//         'sender': _auth.currentUser!.uid,
+//         'receiver': widget.chatPartnerId,
+//         'text': _messageController.text,
+//         'timestamp': FieldValue.serverTimestamp(),
+//         'unread': true,
+//       });
 
-//     // Update the chat room's last message details and increment the unread count for the receiver
-//     await _firestore.collection('chats').doc(chatRoomId).set({
-//       'lastMessage': _messageController.text,
-//       'lastMessageTimestamp': FieldValue.serverTimestamp(),
-//       'unreadCount_${widget.chatPartnerId}': FieldValue.increment(1),
-//     }, SetOptions(merge: true));
+//       // Update the chat room's last message details and increment the unread count for the receiver
+//       await _firestore.collection('chats').doc(chatRoomId).set({
+//         'lastMessage': _messageController.text,
+//         'lastMessageTimestamp': FieldValue.serverTimestamp(),
+//         'unreadCount_${widget.chatPartnerId}': FieldValue.increment(1),
+//       }, SetOptions(merge: true));
 
-//     _messageController.clear();
+//       _messageController.clear();
+//     }
 //   }
-// }
 
 //   // Simulate starting a voice call
 //   Future<void> startVoiceCall() async {
@@ -326,7 +331,8 @@
 //             child: StreamBuilder<QuerySnapshot>(
 //               stream: _firestore
 //                   .collection('chats')
-//                   .doc(getChatRoomId(_auth.currentUser!.uid, widget.chatPartnerId))
+//                   .doc(getChatRoomId(
+//                       _auth.currentUser!.uid, widget.chatPartnerId))
 //                   .collection('messages')
 //                   .orderBy('timestamp', descending: true)
 //                   .snapshots(),
@@ -342,7 +348,8 @@
 //                   var isMe = messageData['sender'] == _auth.currentUser!.uid;
 //                   messageWidgets.add(
 //                     Align(
-//                       alignment: isMe ? Alignment.centerRight : Alignment.centerLeft,
+//                       alignment:
+//                           isMe ? Alignment.centerRight : Alignment.centerLeft,
 //                       child: Container(
 //                         padding: EdgeInsets.all(10),
 //                         margin: EdgeInsets.all(5),
@@ -388,7 +395,7 @@
 //     );
 //   }
 // }
-
+//@@@@@@@@@@@@@@@@@@@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -436,16 +443,43 @@ class _ChatScreenState extends State<ChatScreen> {
         'timestamp': FieldValue.serverTimestamp(),
         'unread': true,
       });
-
+      _messageController.clear();
       await _firestore.collection('chats').doc(chatRoomId).set({
         'lastMessage': _messageController.text,
         'lastMessageTimestamp': FieldValue.serverTimestamp(),
         'unreadCount_${widget.chatPartnerId}': FieldValue.increment(1),
       }, SetOptions(merge: true));
-
-      _messageController.clear();
     }
   }
+
+  // Future<void> sendMessage() async {
+  //   if (_messageController.text.isNotEmpty) {
+  //     String chatRoomId =
+  //         getChatRoomId(_auth.currentUser!.uid, widget.chatPartnerId);
+
+  //     // Send message with 'unread' status
+  //     await _firestore
+  //         .collection('chats')
+  //         .doc(chatRoomId)
+  //         .collection('messages')
+  //         .add({
+  //       'sender': _auth.currentUser!.uid,
+  //       'receiver': widget.chatPartnerId,
+  //       'text': _messageController.text,
+  //       'timestamp': FieldValue.serverTimestamp(),
+  //       'unread': true,
+  //     });
+
+  //     // Update the chat room's last message details and increment the unread count for the receiver
+  //     await _firestore.collection('chats').doc(chatRoomId).set({
+  //       'lastMessage': _messageController.text,
+  //       'lastMessageTimestamp': FieldValue.serverTimestamp(),
+  //       'unreadCount_${widget.chatPartnerId}': FieldValue.increment(1),
+  //     }, SetOptions(merge: true));
+
+  //     _messageController.clear();
+  //   }
+  // }
 
   // Future<void> startVoiceCall() async {
   //   await saveCallToFirestore('voice');
@@ -529,14 +563,14 @@ class _ChatScreenState extends State<ChatScreen> {
     );
   }
 
-  Future<void> saveCallToFirestore(String callType) async {
-    await _firestore.collection('calls').add({
-      'caller': _auth.currentUser!.uid,
-      'receiver': widget.chatPartnerId,
-      'callType': callType,
-      'timestamp': FieldValue.serverTimestamp(),
-    });
-  }
+  // Future<void> saveCallToFirestore(String callType) async {
+  //   await _firestore.collection('calls').add({
+  //     'caller': _auth.currentUser!.uid,
+  //     'receiver': widget.chatPartnerId,
+  //     'callType': callType,
+  //     'timestamp': FieldValue.serverTimestamp(),
+  //   });
+  // }
 
   void listenForIncomingCalls() {
     final String currentUserId = _auth.currentUser!.uid;
