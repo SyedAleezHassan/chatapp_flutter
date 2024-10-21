@@ -1,6 +1,154 @@
-import 'package:firebase_auth/firebase_auth.dart';
+// import 'package:firebase_auth/firebase_auth.dart';
+// import 'package:flutter/material.dart';
+// import 'package:cloud_firestore/cloud_firestore.dart';
+
+// import 'send_messsage_screen.dart';
+
+// class ChatListPage extends StatelessWidget {
+//   final _firestore = FirebaseFirestore.instance;
+
+//   @override
+//   Widget build(BuildContext context) {
+//     return Scaffold(
+//       body: StreamBuilder<QuerySnapshot>(
+//         stream: _firestore.collection('users').snapshots(),
+//         builder: (context, snapshot) {
+//           if (!snapshot.hasData) {
+//             return Center(child: CircularProgressIndicator());
+//           }
+
+//           final users = snapshot.data!.docs;
+//           List<Widget> userTiles = [];
+//           final currentUser = FirebaseAuth.instance.currentUser;
+
+//           for (var user in users) {
+//             var userData = user.data() as Map<String, dynamic>;
+
+//             // Skip the current user's tile
+//             if (userData['uid'] == currentUser?.uid) {
+//               continue;
+//             }
+
+//             userTiles.add(StreamBuilder<DocumentSnapshot>(
+//               stream: _firestore
+//                   .collection('chats')
+//                   .doc(getChatRoomId(currentUser!.uid, userData['uid']))
+//                   .snapshots(),
+//               builder: (context, chatSnapshot) {
+//                 if (!chatSnapshot.hasData) {}
+
+//                 var chatData =
+//                     chatSnapshot.data?.data() as Map<String, dynamic>?;
+//                 String lastMessage = chatData?['lastMessage'] ?? '';
+//                 int unreadCount =
+//                     chatData?['unreadCount_${currentUser.uid}'] ?? 0;
+
+//                 //design
+//                 return ListTile(
+//                   contentPadding:
+//                       EdgeInsets.symmetric(horizontal: 12.0, vertical: 8.0),
+//                   leading: CircleAvatar(
+//                     radius: 22,
+//                     backgroundColor: Colors.grey[300],
+//                     backgroundImage: userData['photoUrl'] != null &&
+//                             userData['photoUrl'].isNotEmpty
+//                         ? NetworkImage(userData['photoUrl'])
+//                         : null,
+//                     child: userData['photoUrl'] == null ||
+//                             userData['photoUrl'].isEmpty
+//                         ? Icon(Icons.person, size: 24, color: Colors.grey[600])
+//                         : null,
+//                   ),
+//                   title: Text(
+//                     userData['name'],
+//                     style: TextStyle(
+//                       fontWeight:
+//                           unreadCount > 0 ? FontWeight.bold : FontWeight.normal,
+//                       fontSize: 14.0,
+//                       color: Colors.black87,
+//                     ),
+//                   ),
+//                   subtitle: Column(
+//                     crossAxisAlignment: CrossAxisAlignment.start,
+//                     children: [
+//                       Text(
+//                         lastMessage,
+//                         style: TextStyle(
+//                           fontSize: 12.0,
+//                           fontWeight: unreadCount > 0
+//                               ? FontWeight.bold
+//                               : FontWeight.normal,
+//                           color: Colors.grey[700],
+//                         ),
+//                         maxLines: 1,
+//                         overflow: TextOverflow.ellipsis,
+//                       ),
+//                       if (unreadCount > 0)
+//                         Padding(
+//                           padding: const EdgeInsets.only(top: 4.0),
+//                           child: Text(
+//                             '$unreadCount unread message(s)',
+//                             style: TextStyle(
+//                               color: Colors.redAccent,
+//                               fontSize: 12.0,
+//                             ),
+//                           ),
+//                         ),
+//                     ],
+//                   ),
+//                   tileColor: Colors.grey[100],
+//                   shape: RoundedRectangleBorder(
+//                     borderRadius: BorderRadius.circular(8.0),
+//                     side: BorderSide(color: Colors.grey[300]!, width: 1.0),
+//                   ),
+//                   selectedColor: Colors.black26,
+//                   // elevation: 2,
+//                   onTap: () {
+//                     print('Navigating to chat screen for ${userData['name']}');
+
+//                     // Reset unread count for the chat room
+//                     _firestore
+//                         .collection('chats')
+//                         .doc(getChatRoomId(currentUser.uid, userData['uid']))
+//                         .update({
+//                       'unreadCount_${currentUser.uid}': 0,
+//                     });
+
+//                     Navigator.push(
+//                       context,
+//                       MaterialPageRoute(
+//                         builder: (context) => ChatScreen(
+//                           userData['uid'],
+//                           userData['name'],
+//                         ),
+//                       ),
+//                     );
+//                   },
+//                 );
+
+//                 //endddd
+//               },
+//             ));
+//           }
+
+//           return ListView(children: userTiles);
+//         },
+//       ),
+//     );
+//   }
+
+// //enddddddddddddd
+//   String getChatRoomId(String userId, String chatPartnerId) {
+//     return userId.hashCode <= chatPartnerId.hashCode
+//         ? '$userId-$chatPartnerId'
+//         : '$chatPartnerId-$userId';
+//   }
+// }
+
+//designnn
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 import 'send_messsage_screen.dart';
 
@@ -10,11 +158,15 @@ class ChatListPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.black, // Set background color to black
       body: StreamBuilder<QuerySnapshot>(
         stream: _firestore.collection('users').snapshots(),
         builder: (context, snapshot) {
           if (!snapshot.hasData) {
-            return Center(child: CircularProgressIndicator());
+            return Center(
+              child: CircularProgressIndicator(
+                  color: Colors.white), // White spinner
+            );
           }
 
           final users = snapshot.data!.docs;
@@ -43,20 +195,24 @@ class ChatListPage extends StatelessWidget {
                 int unreadCount =
                     chatData?['unreadCount_${currentUser.uid}'] ?? 0;
 
-                //design
+                // Design
                 return ListTile(
                   contentPadding:
                       EdgeInsets.symmetric(horizontal: 12.0, vertical: 8.0),
                   leading: CircleAvatar(
                     radius: 22,
-                    backgroundColor: Colors.grey[300],
+                    backgroundColor:
+                        Colors.grey[800], // Darker grey for avatar background
                     backgroundImage: userData['photoUrl'] != null &&
                             userData['photoUrl'].isNotEmpty
                         ? NetworkImage(userData['photoUrl'])
                         : null,
                     child: userData['photoUrl'] == null ||
                             userData['photoUrl'].isEmpty
-                        ? Icon(Icons.person, size: 24, color: Colors.grey[600])
+                        ? Icon(Icons.person,
+                            size: 24,
+                            color:
+                                Colors.white70) // White icon for empty avatar
                         : null,
                   ),
                   title: Text(
@@ -65,7 +221,7 @@ class ChatListPage extends StatelessWidget {
                       fontWeight:
                           unreadCount > 0 ? FontWeight.bold : FontWeight.normal,
                       fontSize: 14.0,
-                      color: Colors.black87,
+                      color: Colors.white, // White text for title
                     ),
                   ),
                   subtitle: Column(
@@ -78,7 +234,7 @@ class ChatListPage extends StatelessWidget {
                           fontWeight: unreadCount > 0
                               ? FontWeight.bold
                               : FontWeight.normal,
-                          color: Colors.grey[700],
+                          color: Colors.grey[400], // Light grey for subtitle
                         ),
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
@@ -89,20 +245,24 @@ class ChatListPage extends StatelessWidget {
                           child: Text(
                             '$unreadCount unread message(s)',
                             style: TextStyle(
-                              color: Colors.redAccent,
+                              color:
+                                  Colors.redAccent, // Red for unread messages
                               fontSize: 12.0,
                             ),
                           ),
                         ),
                     ],
                   ),
-                  tileColor: Colors.grey[100],
+                  tileColor:
+                      Colors.grey[900], // Dark tile background to match black
                   shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(8.0),
-                    side: BorderSide(color: Colors.grey[300]!, width: 1.0),
+                    borderRadius: BorderRadius.circular(
+                        12.0), // Rounded corners for tiles
+                    side: BorderSide(
+                        color: Colors.grey[700]!, width: 0.5), // Subtle border
                   ),
-                  selectedColor: Colors.black26,
-                  // elevation: 2,
+                  selectedColor:
+                      Colors.white30, // Slight white tint for selected
                   onTap: () {
                     print('Navigating to chat screen for ${userData['name']}');
 
@@ -144,3 +304,5 @@ class ChatListPage extends StatelessWidget {
         : '$chatPartnerId-$userId';
   }
 }
+
+//enddddd

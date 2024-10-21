@@ -838,6 +838,48 @@ class _ChatScreenState extends State<ChatScreen> {
 }
 
 // CallScreen Component
+// class CallScreen extends StatelessWidget {
+//   final String receiverName;
+//   final String receiverId;
+
+//   CallScreen(
+//       {required this.receiverName,
+//       required this.receiverId,
+//       required String callId});
+
+//   @override
+//   Widget build(BuildContext context) {
+//     return Scaffold(
+//       appBar: AppBar(
+//         title: Text('Calling $receiverName'),
+//         backgroundColor: Colors.black,
+//       ),
+//       body: Center(
+//         child: Column(
+//           mainAxisAlignment: MainAxisAlignment.center,
+//           children: [
+//             Text(
+//               'Voice Call with $receiverName',
+//               style: TextStyle(fontSize: 20),
+//             ),
+//             SizedBox(height: 20),
+//             ElevatedButton.icon(
+//               icon: Icon(Icons.call_end),
+//               label: Text('Cut Call'),
+//               style: ElevatedButton.styleFrom(iconColor: Colors.red),
+//               onPressed: () {
+//                 Navigator.pop(context);
+//               },
+//             ),
+//           ],
+//         ),
+//       ),
+//     );
+//   }
+// }
+
+// import 'package:flutter/material.dart';
+
 class CallScreen extends StatelessWidget {
   final String receiverName;
   final String receiverId;
@@ -851,28 +893,54 @@ class CallScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Calling $receiverName'),
-        backgroundColor: Colors.black,
-      ),
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Text(
-              'Voice Call with $receiverName',
-              style: TextStyle(fontSize: 20),
-            ),
-            SizedBox(height: 20),
-            ElevatedButton.icon(
-              icon: Icon(Icons.call_end),
-              label: Text('Cut Call'),
-              style: ElevatedButton.styleFrom(iconColor: Colors.red),
-              onPressed: () {
-                Navigator.pop(context);
-              },
-            ),
-          ],
+        title: Text(
+          'Calling $receiverName',
+          style: TextStyle(color: Colors.white), // White text for app bar
         ),
+        backgroundColor: Colors.black, // Black app bar
+      ),
+      backgroundColor: Colors.black, // Black background for the body
+      body: Stack(
+        children: [
+          Center(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Text(
+                  'Voice Call with $receiverName',
+                  style: TextStyle(
+                    fontSize: 22,
+                    color: Colors.white, // White text for receiver name
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                SizedBox(height: 20),
+              ],
+            ),
+          ),
+          Positioned(
+            bottom: 50, // Position the button near the bottom
+            left: 0,
+            right: 0,
+            child: Center(
+              child: ElevatedButton.icon(
+                icon: Icon(Icons.call_end),
+                label: Text('Cut Call'),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.red, // Red button background
+                  foregroundColor: Colors.white, // White text and icon
+                  padding: EdgeInsets.symmetric(horizontal: 30, vertical: 12),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(25.0), // Rounded button
+                  ),
+                ),
+                onPressed: () {
+                  Navigator.pop(context);
+                },
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }
